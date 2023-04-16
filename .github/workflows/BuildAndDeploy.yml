@@ -18,13 +18,31 @@ jobs:
     runs-on: ubuntu-latest
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      ITCH_USERNAME: ${{ secrets.ITCH_USERNAME }}
+      ITCH_GAME_ID: ${{ secrets.ITCH_GAME_ID }}
     steps:
+      - name: Check for missing secrets
+        run: |
+          if [ -z "${UNITY_LICENSE}" ]; then
+            echo "Error: UNITY_LICENSE secret is missing"
+            exit 1
+          fi
+          if [ -z "${ITCH_USERNAME}" ]; then
+            echo "Error: ITCH_USERNAME secret is missing"
+            exit 1
+          fi
+          if [ -z "${ITCH_GAME_ID}" ]; then
+            echo "Error: ITCH_GAME_ID secret is missing"
+            exit 1
+          fi
+
       - name: Success! - Found a license
         if: ${{ startsWith(env.UNITY_LICENSE, '<') }}
         run: exit 0
       - name: Fail - No License XX
         if: ${{ !startsWith(env.UNITY_LICENSE, '<') }}
         run: exit 1
+
 
   buildWebGL:
     needs: checkLicense
