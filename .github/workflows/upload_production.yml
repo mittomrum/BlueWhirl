@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Verify build directory
         run: |
-          if [ ! -d "build/WebGL" ]; then
+          if [ ! -d "CICD/WebGL" ]; then
             echo "Directory not found!"
             exit 1
           fi
