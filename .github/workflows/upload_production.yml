@@ -7,7 +7,6 @@ jobs:
   Upload_production:
     name: Upload production to Itch
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/production'
     strategy:
       matrix:
         template: [WebGL]
