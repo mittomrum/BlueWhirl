@@ -1,35 +1,32 @@
-name: Deploy To Itch
-on:
-  workflow_dispatch
+Upload_production:
+  needs: buildWebGL
+  name: Upload production to Itch
+  runs-on: ubuntu-latest
+  if: github.ref == 'refs/heads/production'
+  strategy:
+    matrix:
+      template: [WebGL]
+      channel: [production]
 
-jobs:
-  deployPages:
-    name: Deploy to Itch.io 🚀
-    runs-on: ubuntu-latest
+  steps:
+    - name: Cache WebGl build
+      uses: actions/cache@v2
+      with:
+        path: build/WebGL
+        key: ${{ runner.os }}-build-webgl-${{ matrix.template }}
+        restore-keys: |
+          ${{ runner.os }}-build-webgl-${{ matrix.template }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Display structure of root files
+      run: ls -R
+      working-directory: build/WebGL
 
-      - uses: actions/download-artifact@v2
-        with:
-          name: build-WebGL
-          path: build
-
-      - name: Display structure of root files
-        run: ls -R
-        working-directory: build/WebGL
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.4
-        with:
-          branch: itch-io
-          folder: build/WebGL
-
-      - uses: KikimoraGames/itch-publish@v0.0.3
-        with:
-          butlerApiKey: ${{ secrets.ITCH_IO_API_KEY }}
-          gameData: ./build/${{ matrix.template }}
-          itchUsername: ${{ env.ITCH_USERNAME }}
-          itchGameId: ${{ env.ITCH_GAME_ID }}
-          buildChannel: ${{ matrix.channel }}
+    - name: Upload to Itch
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: KikimoraGames/itch-publish@v0.0.3
+      with:
+        butlerApiKey: ${{ secrets.ITCH_IO_API_KEY }}
+        gameData: ./build/${{ matrix.template }}
+        itchUsername: ${{ env.ITCH_USERNAME }}
+        itchGameId: ${{ env.ITCH_GAME_ID }}
+        buildChannel: ${{ matrix.channel }}
