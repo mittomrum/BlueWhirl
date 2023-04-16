@@ -1,4 +1,4 @@
-name: Upload From Cache 🙏
+name: Upload From Cache 🤞
 
 on:
   workflow_dispatch:
