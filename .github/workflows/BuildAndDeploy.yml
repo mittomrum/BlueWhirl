@@ -66,6 +66,7 @@ jobs:
           git lfs pull
           git add .
           git reset --hard
+
       - name: Restore Library cache
         uses: actions/cache@v2
         id: library-cache
@@ -84,6 +85,14 @@ jobs:
           path: build/WebGL
 
 
+      - name: Save to cache
+        uses: actions/cache@v2
+        with:
+          path: build/WebGL
+          key: ${{ runner.os }}-webgl-${{ hashFiles('**/package-lock.json') }}
+
+
+
   Upload_production:
     needs: buildWebGL
     name: Upload production to Itch
@@ -98,7 +107,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: build-WebGL
-          path: build
+          path: build/WebGL
 
       - name: Display structure of root files
         run: ls -R
