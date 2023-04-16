@@ -44,7 +44,7 @@ jobs:
         run: exit 1
 
 
-  buildWebGL:
+ buildWebGL:
     needs: checkLicense
     name: Build for WebGL 🖥️
     runs-on: ubuntu-latest
@@ -52,41 +52,37 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
+        uses: actions/checkout@v2
       - name: Create LFS file list
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
-
       - name: Restore LFS cache
         uses: actions/cache@v2
         id: lfs-cache
         with:
           path: .git/lfs
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
-
       - name: Git LFS Pull
         run: |
           git lfs pull
           git add .
           git reset --hard
-
       - name: Restore Library cache
         uses: actions/cache@v2
+        id: library-cache
         with:
           path: Library
-          key: Library-build-WebGL
+          key: Library-build-WebGL-${{ hashFiles('.lfs-assets-id') }}
           restore-keys: |
-            Library-build-
+            Library-build-WebGL-
             Library-
-
       - uses: webbertakken/unity-builder@v2
         with:
           targetPlatform: WebGL
-
       - uses: actions/upload-artifact@v2
         with:
           name: build-WebGL
-          path: build/WebGL      
+          path: build/WebGL
+
 
   Upload_production:
     needs: buildWebGL
