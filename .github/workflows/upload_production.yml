@@ -4,7 +4,6 @@ on:
 
 jobs:
   deployPages:
-    needs: buildWebGL
     name: Deploy to Itch.io 🚀
     runs-on: ubuntu-latest
 
